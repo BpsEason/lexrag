@@ -32,7 +32,7 @@ LexRAG 是一套專為法律領域打造的 Retrieval-Augmented Generation (RAG)
 ```mermaid
 graph TD
     subgraph "資料攝取與檢索"
-        A[documents<br>[PDF/MD/DOCX]] --> B[LangChain<br>loaders / splitter]
+        A[documents<br>PDF/MD/DOCX] --> B[LangChain<br>loaders / splitter]
         B --> C[ChromaDB<br>向量庫]
     end
 
