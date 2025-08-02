@@ -1,3 +1,9 @@
+好的，我理解了。很抱歉上次的格式有問題，可能是因為系統在處理 Markdown 格式時出現了錯誤。
+
+這一次我將直接輸出完整的 `README.md` 文本內容，確保格式正確且易於閱讀。
+
+-----
+
 # LexRAG – 法律文件智慧檢索樣板
 
 LexRAG 是一套專為法律領域打造的 Retrieval-Augmented Generation (RAG) 範本。它將散落於 PDF、DOCX、Markdown 等非結構化法律文件向量化並編入 ChromaDB，結合大型語言模型（LLM）與檢索引擎，讓使用者能以自然語言發問，快速獲得含有明確出處的高可信度法律問答。
@@ -26,7 +32,7 @@ LexRAG 是一套專為法律領域打造的 Retrieval-Augmented Generation (RAG)
 ```mermaid
 graph TD
     subgraph "資料攝取與檢索"
-        A[documents<br>(PDF/MD/DOCX)] --> B[LangChain<br>loaders / splitter]
+        A[documents<br>[PDF/MD/DOCX]] --> B[LangChain<br>loaders / splitter]
         B --> C[ChromaDB<br>向量庫]
     end
 
