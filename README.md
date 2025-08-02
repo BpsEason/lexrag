@@ -32,27 +32,36 @@ LexRAG 是一套專為法律領域打造的 Retrieval-Augmented Generation (RAG)
 ```mermaid
 graph TD
     subgraph "資料攝取與檢索"
-        A[documents<br>PDF/MD/DOCX] --> B[LangChain<br>loaders / splitter]
+        direction LR
+        A[documents<br>(PDF/MD/DOCX)] -- 載入 --> B(LangChain<br>loaders / splitter)
+        B -- 向量化與寫入 --> C[ChromaDB<br>向量庫]
     end
     
     subgraph "RAG 檢索流程"
-        D[FastAPI<br>+ SSE] --> E[Retrieval<br>+ LLM]
-        E --> G[LLM Service<br>vLLM]
+        D[FastAPI<br>+ SSE] -- 查詢請求 --> E{Retrieval<br>+ LLM}
+        E -- 檢索 --> C
+        E -- 生成答案 --> G[LLM Service<br>vLLM]
+        G -- 回應 --> D
     end
 
     subgraph "使用者介面與監控"
-        H[Frontend<br>/ cURL] --> D
-        D --> I[Prometheus]
-        G --> I
-        I --> J[Grafana]
+        H[Frontend<br>/ cURL] -- 查詢 --> D
+        D -- 監控指標 --> I[Prometheus]
+        G -- 監控指標 --> I
+        I -- 視覺化 --> J[Grafana]
     end
     
-    B --> C[ChromaDB<br>向量庫]
-    E --> C
-    
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style C fill:#ccf,stroke:#333,stroke-width:2px
-    style G fill:#bbf,stroke:#333,stroke-width:2px
+    style A fill:#D4E7F4,stroke:#333,stroke-width:2px,color:#1A237E
+    style B fill:#E0F7FA,stroke:#333,stroke-width:2px,color:#1A237E
+    style C fill:#90CAF9,stroke:#333,stroke-width:2px,color:#1A237E
+    style D fill:#C8E6C9,stroke:#333,stroke-width:2px,color:#1A237E
+    style E fill:#FFF9C4,stroke:#333,stroke-width:2px,color:#1A237E
+    style F fill:#90CAF9,stroke:#333,stroke-width:2px,color:#1A237E
+    style G fill:#B39DDB,stroke:#333,stroke-width:2px,color:#1A237E
+    style H fill:#E1F5FE,stroke:#333,stroke-width:2px,color:#1A237E
+    style I fill:#FFCCBC,stroke:#333,stroke-width:2px,color:#1A237E
+    style J fill:#FFECB3,stroke:#333,stroke-width:2px,color:#1A237E
+
 ```
 
   * **文件攝取**：`documents` 目錄中的文件透過 `LangChain document loaders` 載入，經由 `Text Splitter` 分割後，將其內容及 `metadata` 轉換成向量並存入 `ChromaDB`。
