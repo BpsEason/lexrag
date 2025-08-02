@@ -38,6 +38,7 @@ graph TD
     end
     
     subgraph "RAG 檢索流程"
+        direction LR
         D[FastAPI<br>+ SSE] -- 查詢請求 --> E{Retrieval<br>+ LLM}
         E -- 檢索 --> C
         E -- 生成答案 --> G[LLM Service<br>vLLM]
@@ -45,6 +46,7 @@ graph TD
     end
 
     subgraph "使用者介面與監控"
+        direction LR
         H[Frontend<br>/ cURL] -- 查詢 --> D
         D -- 監控指標 --> I[Prometheus]
         G -- 監控指標 --> I
@@ -56,7 +58,6 @@ graph TD
     style C fill:#90CAF9,stroke:#333,stroke-width:2px,color:#1A237E
     style D fill:#C8E6C9,stroke:#333,stroke-width:2px,color:#1A237E
     style E fill:#FFF9C4,stroke:#333,stroke-width:2px,color:#1A237E
-    style F fill:#90CAF9,stroke:#333,stroke-width:2px,color:#1A237E
     style G fill:#B39DDB,stroke:#333,stroke-width:2px,color:#1A237E
     style H fill:#E1F5FE,stroke:#333,stroke-width:2px,color:#1A237E
     style I fill:#FFCCBC,stroke:#333,stroke-width:2px,color:#1A237E
