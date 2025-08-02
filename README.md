@@ -1,9 +1,3 @@
-好的，我理解了。很抱歉上次的格式有問題，可能是因為系統在處理 Markdown 格式時出現了錯誤。
-
-這一次我將直接輸出完整的 `README.md` 文本內容，確保格式正確且易於閱讀。
-
------
-
 # LexRAG – 法律文件智慧檢索樣板
 
 LexRAG 是一套專為法律領域打造的 Retrieval-Augmented Generation (RAG) 範本。它將散落於 PDF、DOCX、Markdown 等非結構化法律文件向量化並編入 ChromaDB，結合大型語言模型（LLM）與檢索引擎，讓使用者能以自然語言發問，快速獲得含有明確出處的高可信度法律問答。
@@ -27,7 +21,7 @@ LexRAG 是一套專為法律領域打造的 Retrieval-Augmented Generation (RAG)
 
 ## 技術架構
 
-這張圖展示了 LexRAG 的資料流與各服務間的交互關係。
+這張圖展示了 LexRAG 的資料流與各服務間的交互關係。我特別加入了「使用者/系統管理者」節點，清楚標示出資料攝取的發起者。
 
 ```mermaid
 graph TD
@@ -53,6 +47,10 @@ graph TD
         I -- 視覺化 --> J[Grafana]
     end
     
+    K[使用者/系統管理者] -- 執行攝取指令 --> B
+    E --> C
+    
+    style K fill:#FFC107,stroke:#333,stroke-width:2px,color:#000
     style A fill:#D4E7F4,stroke:#333,stroke-width:2px,color:#1A237E
     style B fill:#E0F7FA,stroke:#333,stroke-width:2px,color:#1A237E
     style C fill:#90CAF9,stroke:#333,stroke-width:2px,color:#1A237E
@@ -62,11 +60,10 @@ graph TD
     style H fill:#E1F5FE,stroke:#333,stroke-width:2px,color:#1A237E
     style I fill:#FFCCBC,stroke:#333,stroke-width:2px,color:#1A237E
     style J fill:#FFECB3,stroke:#333,stroke-width:2px,color:#1A237E
-
 ```
 
-  * **文件攝取**：`documents` 目錄中的文件透過 `LangChain document loaders` 載入，經由 `Text Splitter` 分割後，將其內容及 `metadata` 轉換成向量並存入 `ChromaDB`。
-  * **RAG 檢索**：`FastAPI` 接收使用者查詢後，首先透過 `ChromaDB Retriever` 檢索相關文件區塊，再將這些上下文與原始問題一同傳送給 `LLM Service` 進行問答生成。
+  * **文件攝取 (手動觸發)**：使用者或系統管理者透過執行指令（例如 `./start.sh` 或手動呼叫 `ingest_documents()` 函數），啟動資料攝取流程。此時，系統會讀取 `documents` 目錄中的文件，經由 `LangChain document loaders` 載入，並將其內容及 `metadata` 轉換成向量後，**寫入** `ChromaDB`。
+  * **RAG 檢索 (自動化)**：當使用者透過前端或 cURL 提交查詢時，`FastAPI` 會自動啟動 RAG 檢索流程。它會透過 `ChromaDB Retriever` **從 `ChromaDB` 讀取**與使用者問題最相關的文件區塊，再將這些上下文與原始問題一同傳送給 `LLM Service` 進行問答生成。
   * **API 與部署**：`FastAPI` 提供主要的 RESTful API，並使用 `Docker Compose` 進行容器化部署。`Prometheus` 和 `Grafana` 負責監控 API 與 LLM 服務的效能指標。
 
 ## 核心程式碼片段與註解
@@ -165,11 +162,12 @@ async def startup_event():
   * **具網路的 LLM 服務**（或自建 vLLM 容器）
   * **本機具備適當的硬碟**存放文件與向量庫
 
-### 1\. 下載範本
+### 1\. 取得專案
+
+從 GitHub 儲存庫克隆程式碼：
 
 ```bash
-# 由於這是一個腳本，沒有 Git 專案，請先執行腳本建立
-./generate_lexrag.sh
+git clone https://github.com/BpsEason/lexrag.git
 cd lexrag
 ```
 
@@ -177,34 +175,37 @@ cd lexrag
 
 建立 `.env` 檔案以儲存敏感資訊，例如 Hugging Face token 或 OpenAI API Key。
 
-```bash
+````bash
 # 建立 .env 檔案
 touch .env
-```
+```.env` 範例：
 
-`.env` 範例：
+````
 
-```
 # .env 檔案範例
-APP_ENV=development
-APP_PORT=8000
 
-CHROMA_DB_DIR=./chroma_db
+APP\_ENV=development
+APP\_PORT=8000
+
+CHROMA\_DB\_DIR=./chroma\_db
 
 # 如果需要 HuggingFace 模型，請在此填寫
-HF_TOKEN=your_huggingface_token
+
+HF\_TOKEN=your\_huggingface\_token
 
 # 如果使用 vLLM，此處為假 API Key
-OPENAI_API_KEY=sk-your-vllm-key
 
-PROMETHEUS_PORT=9090
-```
+OPENAI\_API\_KEY=sk-your-vllm-key
 
-### 3\. 啟動服務
+PROMETHEUS\_PORT=9090
+
+````
+
+### 3. 啟動服務
 
 ```bash
 ./start.sh
-```
+````
 
 或者手動啟動：
 
