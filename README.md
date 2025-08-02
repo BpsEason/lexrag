@@ -33,7 +33,7 @@ LexRAG 是一套專為法律領域打造的 Retrieval-Augmented Generation (RAG)
 graph TD
     subgraph "資料攝取與檢索"
         direction LR
-        A[documents<br>(PDF/MD/DOCX)] -- 載入 --> B(LangChain<br>loaders / splitter)
+        A[documents<br>PDF/MD/DOCX] -- 載入 --> B(LangChain<br>loaders / splitter)
         B -- 向量化與寫入 --> C[ChromaDB<br>向量庫]
     end
     
