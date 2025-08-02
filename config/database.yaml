@@ -1,0 +1,6 @@
+# 用於未來整合結構化數據庫的配置，例如法條索引、判決書元資料等
+# 這裡可以設定資料庫連線字串
+#
+# db_url: "postgresql://user:password@db:5432/lexrag_db"
+#
+# 在 app/main.py 中可以建立對應的 Loader 和處理邏輯

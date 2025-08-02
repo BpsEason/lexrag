@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+langchain
+langchain-community
+chromadb
+huggingface_hub
+pypdf
+python-docx
+markdown
+pytest
+pytest-asyncio
+prometheus-client
+pyyaml
+python-dotenv

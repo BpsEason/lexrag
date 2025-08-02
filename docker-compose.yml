@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: lexrag-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./documents:/app/documents
+      - ./chroma_db:/app/chroma_db
+    env_file:
+      - .env
+    depends_on:
+      - vectorstore
+      - llm
+    networks:
+      - lexrag-network
+
+  vectorstore:
+    image: chromadb/chroma:latest
+    container_name: lexrag-vectorstore
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./chroma_db:/chroma_db
+    networks:
+      - lexrag-network
+
+  llm:
+    image: vllm/vllm-openai:latest
+    container_name: lexrag-llm
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./models:/models
+    command: --model mistralai/Mixtral-7B-Instruct-v0.1 --host 0.0.0.0 --port 8000
+    networks:
+      - lexrag-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: lexrag-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - lexrag-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: lexrag-grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - lexrag-network
+
+networks:
+  lexrag-network:
+    driver: bridge
