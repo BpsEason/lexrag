@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info
+.venv
+
+# Specific to this project
+.env
+chroma_db/
+models/
+/documents/
